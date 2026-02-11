@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 용어사전 - 김종태 기념사업회</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px 20px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .logo-preview {
+            width: 96px;
+            height: 96px;
+            border-radius: 20px;
+            object-fit: contain;
+            margin: 0 auto 16px auto;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.17)
+        }
+        header h1 {
+            font-size: 2.3em;
+            margin-bottom: 9px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.18);
+        }
+        header p {
+            font-size: 1.13em;
+            opacity: 0.97;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg,#e0e7ff 0%, #fafcff 100%);
+            padding: 15px 25px 10px 25px;
+            margin: 0 0 30px 0;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 2px 14px rgba(102,126,234,0.08);
+            max-width: 480px;
+        }
+        .search-bar label {
+            margin-right:8px;
+            font-weight: bold;
+            color:#3b3667;
+        }
+        .search-bar input[type="text"] {
+            width: 100%;
+            font-size: 1.1em;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #b4b8f6;
+            outline: none;
+            transition: border 0.2s;
+            margin-left: 4px;
+            background: #fff;
+        }
+        .search-bar input[type="text"]:focus {
+            border: 1.5px solid #667eea;
+        }
+        @media (max-width: 950px) {
+            .search-bar {
+                max-width: 100%;
+                padding: 14px 10px 8px 10px;
+            }
+        }
+        .content {
+            padding: 40px 12px 40px 12px;
+        }
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .term-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid #667eea;
+        }
+        .term-card.hidden { display: none !important; }
+        .term-card.highlight {
+            border-left: 5px solid #ffab00 !important;
+            box-shadow: 0 2px 8px rgba(255,171,0,0.15);
+            animation: highlight-term 1.2s;
+        }
+        @keyframes highlight-term {
+            0% {background-color: #ffeeb0;}
+            50% {background-color: #fffde0;}
+            100% {background-color: inherit;}
+        }
+        .term-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        .term-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9em;
+        }
+        .term-title {
+            font-size: 1.18em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 7px;
+        }
+        .term-en {
+            color: #667eea;
+            font-size: 0.85em;
+            font-style: italic;
+            margin-left: 7px;
+        }
+        .term-desc {
+            color: #4a5568;
+            font-size: 1.04em;
+            line-height: 1.6;
+            margin-top: 5px;
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 32px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scroll-to-top.visible { opacity: 1; visibility: visible; }
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        @media (max-width: 768px) {
+            .terms-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8em; }
+            .content { padding: 18px 3vw 18px 3vw; }
+            .scroll-to-top {
+                width: 50px; height: 50px; bottom: 20px; right: 20px; font-size: 24px;
+            }
+            .search-bar {
+                padding: 10px 5px 6px 5px;
+                max-width: 100%;
+            }
+        }
+        @media print {
+            body { background: white; }
+            .term-card { page-break-inside: avoid; }
+            .scroll-to-top, .search-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://cdn.imweb.me/thumbnail/20240204/137e1f036b4dd.png" alt="AI 용어집 로고 미리보기" class="logo-preview" loading="lazy" width="150" height="150" style="width:150px; height:150px;" />
+            <h1>AI 기초용어 사전</h1>
+            <p>김종태 기념사업회</p>
+        </header>
+
+        <div class="search-bar">
+            <label for="term-search">검색</label>
+            <input type="text" id="term-search" placeholder="AI 용어/영어/설명을 입력해 검색..." autocomplete="off">
+        </div>
+        
+        <div class="content">
+
+            <!-- 카테고리 1: AI 핵심용어 (1-25) -->
+            <div class="category-section">
+                <div class="category-title">🤖 AI 핵심용어</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">1</span><div class="term-title">AI <span class="term-en">(Artificial Intelligence)</span></div><div class="term-desc">사람처럼 생각하고 학습하는 컴퓨터 프로그램</div></div>
+                    <div class="term-card"><span class="term-number">2</span><div class="term-title">머신러닝 <span class="term-en">(Machine Learning, ML)</span></div><div class="term-desc">컴퓨터가 경험을 통해 배우는 기술</div></div>
+                    <div class="term-card"><span class="term-number">3</span><div class="term-title">딥러닝 <span class="term-en">(Deep Learning)</span></div><div class="term-desc">AI가 데이터를 보고 스스로 학습하는 방식</div></div>
+                    <div class="term-card"><span class="term-number">4</span><div class="term-title">신경망 <span class="term-en">(Neural Network)</span></div><div class="term-desc">사람의 뇌 구조를 본떠 만든 AI 학습 모델</div></div>
+                    <div class="term-card"><span class="term-number">5</span><div class="term-title">알고리즘 <span class="term-en">(Algorithm)</span></div><div class="term-desc">AI가 문제를 해결하는 방법과 절차</div></div>
+                    <div class="term-card"><span class="term-number">6</span><div class="term-title">빅데이터 <span class="term-en">(Big Data)</span></div><div class="term-desc">AI가 학습하는데 사용하는 엄청나게 많은 정보</div></div>
+                    <div class="term-card"><span class="term-number">7</span><div class="term-title">학습 데이터 <span class="term-en">(Training Data)</span></div><div class="term-desc">AI를 가르치기 위해 사용하는 자료</div></div>
+                    <div class="term-card"><span class="term-number">8</span><div class="term-title">데이터 <span class="term-en">(Data)</span></div><div class="term-desc">컴퓨터가 처리하는 모든 정보</div></div>
+                    <div class="term-card"><span class="term-number">9</span><div class="term-title">자연어 처리 <span class="term-en">(NLP, Natural Language Processing)</span></div><div class="term-desc">컴퓨터가 사람의 언어를 이해하고 처리하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">10</span><div class="term-title">컴퓨터 비전 <span class="term-en">(Computer Vision)</span></div><div class="term-desc">컴퓨터가 이미지나 영상을 보고 이해하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">11</span><div class="term-title">GPT <span class="term-en">(Generative Pre-trained Transformer)</span></div><div class="term-desc">OpenAI가 개발한 대규모 언어 모델 기술</div></div>
+                    <div class="term-card"><span class="term-number">12</span><div class="term-title">LLM <span class="term-en">(Large Language Model)</span></div><div class="term-desc">방대한 데이터로 학습한 대형 언어 AI 모델</div></div>
+                    <div class="term-card"><span class="term-number">13</span><div class="term-title">파인튜닝 <span class="term-en">(Fine-tuning)</span></div><div class="term-desc">특정 목적에 맞게 AI를 재학습시키는 과정</div></div>
+                    <div class="term-card"><span class="term-number">14</span><div class="term-title">토큰 <span class="term-en">(Token)</span></div><div class="term-desc">AI가 글을 이해하는 최소 단위 (단어나 문자 조각)</div></div>
+                    <div class="term-card"><span class="term-number">15</span><div class="term-title">컨텍스트 <span class="term-en">(Context)</span></div><div class="term-desc">AI가 대화 내용을 이해하기 위한 전체 문맥</div></div>
+                    <div class="term-card"><span class="term-number">16</span><div class="term-title">환각 <span class="term-en">(Hallucination)</span></div><div class="term-desc">AI가 잘못된 정보를 사실처럼 말하는 현상</div></div>
+                    <div class="term-card"><span class="term-number">17</span><div class="term-title">편향성 <span class="term-en">(Bias)</span></div><div class="term-desc">AI가 특정 방향으로 치우친 답변을 하는 현상</div></div>
+                    <div class="term-card"><span class="term-number">18</span><div class="term-title">윤리적 AI <span class="term-en">(Ethical AI)</span></div><div class="term-desc">사람에게 해가 되지 않도록 만든 안전한 AI</div></div>
+                    <div class="term-card"><span class="term-number">19</span><div class="term-title">AGI <span class="term-en">(Artificial General Intelligence)</span></div><div class="term-desc">사람처럼 모든 분야를 다룰 수 있는 범용 인공지능</div></div>
+                    <div class="term-card"><span class="term-number">20</span><div class="term-title">강화학습 <span class="term-en">(Reinforcement Learning)</span></div><div class="term-desc">시행착오를 통해 보상을 받으며 학습하는 방식</div></div>
+                    <div class="term-card"><span class="term-number">21</span><div class="term-title">지도학습 <span class="term-en">(Supervised Learning)</span></div><div class="term-desc">정답이 있는 데이터로 AI를 학습시키는 방법</div></div>
+                    <div class="term-card"><span class="term-number">22</span><div class="term-title">비지도학습 <span class="term-en">(Unsupervised Learning)</span></div><div class="term-desc">정답 없이 AI가 스스로 패턴을 찾는 학습 방법</div></div>
+                    <div class="term-card"><span class="term-number">23</span><div class="term-title">전이학습 <span class="term-en">(Transfer Learning)</span></div><div class="term-desc">한 분야에서 배운 지식을 다른 분야에 활용하는 방법</div></div>
+                    <div class="term-card"><span class="term-number">24</span><div class="term-title">오버피팅 <span class="term-en">(Overfitting)</span></div><div class="term-desc">AI가 학습 데이터만 너무 잘 맞춰서 실전에서 못하는 현상</div></div>
+                    <div class="term-card"><span class="term-number">25</span><div class="term-title">하이퍼파라미터 <span class="term-en">(Hyperparameter)</span></div><div class="term-desc">AI 학습 효과를 조절하는 설정값</div></div>
+                </div>
+            </div>
+            
+            <!-- 카테고리 2: 대화형 AI 도구 (26-50) -->
+            <div class="category-section">
+                <div class="category-title">💬 대화형 AI 도구</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">26</span><div class="term-title">ChatGPT <span class="term-en">(Chat Generative Pre-trained Transformer)</span></div><div class="term-desc">오픈AI에서 만든 대화형 AI, 질문하면 답변해주는 서비스</div></div>
+                    <div class="term-card"><span class="term-number">27</span><div class="term-title">Claude <span class="term-en">(Claude)</span></div><div class="term-desc">친절하고 자세한 설명이 특징인 대화형 AI</div></div>
+                    <div class="term-card"><span class="term-number">28</span><div class="term-title">Gemini <span class="term-en">(Gemini)</span></div><div class="term-desc">구글이 만든 AI로 최신 정보 검색에 강함</div></div>
+                    <div class="term-card"><span class="term-number">29</span><div class="term-title">Copilot <span class="term-en">(Copilot)</span></div><div class="term-desc">마이크로소프트의 AI로 윈도우에 기본 탑재</div></div>
+                    <div class="term-card"><span class="term-number">30</span><div class="term-title">챗봇 <span class="term-en">(Chatbot)</span></div><div class="term-desc">사람과 대화하듯 질문하고 답하는 AI 프로그램</div></div>
+                    <div class="term-card"><span class="term-number">31</span><div class="term-title">프롬프트 <span class="term-en">(Prompt)</span></div><div class="term-desc">AI에게 주는 질문이나 명령어</div></div>
+                    <div class="term-card"><span class="term-number">32</span><div class="term-title">프롬프트 엔지니어링 <span class="term-en">(Prompt Engineering)</span></div><div class="term-desc">AI에게 더 좋은 답변을 받기 위한 질문 작성 기술</div></div>
+                    <div class="term-card"><span class="term-number">33</span><div class="term-title">챗 <span class="term-en">(Chat)</span></div><div class="term-desc">문자로 대화하는 것</div></div>
+                    <div class="term-card"><span class="term-number">34</span><div class="term-title">대화창 <span class="term-en">(Chat Window)</span></div><div class="term-desc">AI와 메시지를 주고받는 화면</div></div>
+                    <div class="term-card"><span class="term-number">35</span><div class="term-title">입력창 <span class="term-en">(Input Box)</span></div><div class="term-desc">질문이나 요청을 타이핑하는 칸</div></div>
+                    <div class="term-card"><span class="term-number">36</span><div class="term-title">전송버튼 <span class="term-en">(Send Button)</span></div><div class="term-desc">입력한 내용을 AI에게 보내는 버튼 (엔터키로도 가능)</div></div>
+                    <div class="term-card"><span class="term-number">37</span><div class="term-title">새 대화 <span class="term-en">(New Chat)</span></div><div class="term-desc">이전 대화를 끝내고 새로운 주제로 시작하기</div></div>
+                    <div class="term-card"><span class="term-number">38</span><div class="term-title">챗 히스토리 <span class="term-en">(Chat History)</span></div><div class="term-desc">AI와 나눈 이전 대화 기록</div></div>
+                    <div class="term-card"><span class="term-number">39</span><div class="term-title">리젠 <span class="term-en">(Regenerate)</span></div><div class="term-desc">AI에게 같은 질문으로 다시 답변 요청하기</div></div>
+                    <div class="term-card"><span class="term-number">40</span><div class="term-title">복사하기 <span class="term-en">(Copy)</span></div><div class="term-desc">AI가 만든 글을 다른 곳에 붙여넣기 위해 저장</div></div>
+                    <div class="term-card"><span class="term-number">41</span><div class="term-title">공유하기 <span class="term-en">(Share)</span></div><div class="term-desc">대화 내용을 다른 사람에게 보내는 기능</div></div>
+                    <div class="term-card"><span class="term-number">42</span><div class="term-title">피드백 <span class="term-en">(Feedback)</span></div><div class="term-desc">AI 답변이 도움이 됐는지 평가하는 것</div></div>
+                    <div class="term-card"><span class="term-number">43</span><div class="term-title">가상 비서 <span class="term-en">(Virtual Assistant)</span></div><div class="term-desc">시리, 빅스비, 알렉사처럼 말로 명령할 수 있는 AI</div></div>
+                    <div class="term-card"><span class="term-number">44</span><div class="term-title">Perplexity <span class="term-en">(Perplexity)</span></div><div class="term-desc">인터넷 검색과 AI 답변을 결합한 검색 엔진</div></div>
+                    <div class="term-card"><span class="term-number">45</span><div class="term-title">Character.AI <span class="term-en">(Character.AI)</span></div><div class="term-desc">유명인이나 캐릭터와 대화할 수 있는 AI</div></div>
+                    <div class="term-card"><span class="term-number">46</span><div class="term-title">Poe <span class="term-en">(Poe)</span></div><div class="term-desc">여러 AI를 한 곳에서 사용할 수 있는 플랫폼</div></div>
+                    <div class="term-card"><span class="term-number">47</span><div class="term-title">RAG <span class="term-en">(Retrieval-Augmented Generation)</span></div><div class="term-desc">AI가 외부 자료를 찾아서 답변하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">48</span><div class="term-title">멀티모달 <span class="term-en">(Multimodal)</span></div><div class="term-desc">글, 그림, 음성을 모두 이해하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">49</span><div class="term-title">콘텍스트 윈도우 <span class="term-en">(Context Window)</span></div><div class="term-desc">AI가 한 번에 기억할 수 있는 대화량</div></div>
+                    <div class="term-card"><span class="term-number">50</span><div class="term-title">AI 에이전트 <span class="term-en">(AI Agent)</span></div><div class="term-desc">스스로 판단하고 행동하는 자율 AI</div></div>
+                </div>
+            </div>
+
+            <!-- 카테고리 3: 음성 및 음향 AI (51-75) -->
+            <div class="category-section">
+                <div class="category-title">🎤 음성 및 음향 AI</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">51</span><div class="term-title">TTS <span class="term-en">(Text-to-Speech)</span></div><div class="term-desc">글자를 음성으로 읽어주는 기술</div></div>
+                    <div class="term-card"><span class="term-number">52</span><div class="term-title">STT <span class="term-en">(Speech-to-Text)</span></div><div class="term-desc">말소리를 글자로 변환하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">53</span><div class="term-title">음성인식 <span class="term-en">(Speech Recognition)</span></div><div class="term-desc">사람의 말을 듣고 글자로 바꿔주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">54</span><div class="term-title">음성 합성 <span class="term-en">(Speech Synthesis)</span></div><div class="term-desc">컴퓨터가 사람처럼 말하는 소리를 만드는 기술</div></div>
+                    <div class="term-card"><span class="term-number">55</span><div class="term-title">보이스 클로닝 <span class="term-en">(Voice Cloning)</span></div><div class="term-desc">특정 사람의 목소리를 AI로 복제하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">56</span><div class="term-title">음성입력 <span class="term-en">(Voice Input)</span></div><div class="term-desc">키보드 대신 말로 질문하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">57</span><div class="term-title">ElevenLabs <span class="term-en">(ElevenLabs)</span></div><div class="term-desc">AI 음성 생성 전문 서비스</div></div>
+                    <div class="term-card"><span class="term-number">58</span><div class="term-title">노이즈 제거 <span class="term-en">(Noise Reduction)</span></div><div class="term-desc">사진이나 음성의 잡음을 AI로 제거하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">59</span><div class="term-title">음성 번역 <span class="term-en">(Voice Translation)</span></div><div class="term-desc">말을 다른 언어로 바꿔서 읽어주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">60</span><div class="term-title">음악 생성 AI <span class="term-en">(Music Generation AI)</span></div><div class="term-desc">AI가 자동으로 음악을 작곡하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">61</span><div class="term-title">Suno <span class="term-en">(Suno)</span></div><div class="term-desc">가사를 입력하면 노래를 만들어주는 AI</div></div>
+                    <div class="term-card"><span class="term-number">62</span><div class="term-title">Udio <span class="term-en">(Udio)</span></div><div class="term-desc">설명만으로 음악을 생성하는 AI 서비스</div></div>
+                    <div class="term-card"><span class="term-number">63</span><div class="term-title">보이스오버 <span class="term-en">(Voiceover)</span></div><div class="term-desc">영상이나 발표에 AI 음성을 입히는 것</div></div>
+                    <div class="term-card"><span class="term-number">64</span><div class="term-title">화자 분리 <span class="term-en">(Speaker Diarization)</span></div><div class="term-desc">여러 사람 목소리를 구분하는 AI 기술</div></div>
+                    <div class="term-card"><span class="term-number">65</span><div class="term-title">실시간 번역 <span class="term-en">(Real-time Translation)</span></div><div class="term-desc">말하는 즉시 다른 언어로 통역해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">66</span><div class="term-title">Whisper <span class="term-en">(Whisper)</span></div><div class="term-desc">OpenAI의 고성능 음성인식 AI</div></div>
+                    <div class="term-card"><span class="term-number">67</span><div class="term-title">음성 감정 분석 <span class="term-en">(Voice Emotion Analysis)</span></div><div class="term-desc">목소리 톤으로 감정 상태를 파악하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">68</span><div class="term-title">더빙 AI <span class="term-en">(Dubbing AI)</span></div><div class="term-desc">영상의 음성을 다른 언어로 자동 교체하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">69</span><div class="term-title">립싱크 <span class="term-en">(Lip Sync)</span></div><div class="term-desc">입 모양과 음성을 AI로 맞추는 기술</div></div>
+                    <div class="term-card"><span class="term-number">70</span><div class="term-title">팟캐스트 자동 편집 <span class="term-en">(Podcast Auto-editing)</span></div><div class="term-desc">AI가 음성 파일을 자동으로 편집해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">71</span><div class="term-title">회의록 자동 생성 <span class="term-en">(Auto Transcription)</span></div><div class="term-desc">회의 내용을 AI가 듣고 문서로 만들어주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">72</span><div class="term-title">Otter.ai <span class="term-en">(Otter.ai)</span></div><div class="term-desc">회의를 녹음하고 자동으로 글로 변환하는 서비스</div></div>
+                    <div class="term-card"><span class="term-number">73</span><div class="term-title">음성 향상 <span class="term-en">(Voice Enhancement)</span></div><div class="term-desc">녹음 품질을 AI로 개선하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">74</span><div class="term-title">음성 변조 <span class="term-en">(Voice Modulation)</span></div><div class="term-desc">목소리를 AI로 다르게 바꾸는 기능</div></div>
+                    <div class="term-card"><span class="term-number">75</span><div class="term-title">AI DJ <span class="term-en">(AI DJ)</span></div><div class="term-desc">AI가 자동으로 음악을 선곡하고 믹싱하는 기술</div></div>
+                </div>
+            </div>
+
+            <!-- 카테고리 4: 이미지 및 영상 AI (76-125) -->
+            <div class="category-section">
+                <div class="category-title">🎨 이미지 및 영상 AI</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">76</span><div class="term-title">이미지 생성 <span class="term-en">(Image Generation)</span></div><div class="term-desc">말로 설명하면 그림을 그려주는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">77</span><div class="term-title">DALL-E <span class="term-en">(DALL-E)</span></div><div class="term-desc">오픈AI의 그림 그리는 AI</div></div>
+                    <div class="term-card"><span class="term-number">78</span><div class="term-title">Midjourney <span class="term-en">(Midjourney)</span></div><div class="term-desc">예술적인 이미지를 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">79</span><div class="term-title">Stable Diffusion <span class="term-en">(Stable Diffusion)</span></div><div class="term-desc">무료로 사용 가능한 이미지 생성 AI</div></div>
+                    <div class="term-card"><span class="term-number">80</span><div class="term-title">Firefly <span class="term-en">(Adobe Firefly)</span></div><div class="term-desc">어도비에서 만든 이미지 생성 AI</div></div>
+                    <div class="term-card"><span class="term-number">81</span><div class="term-title">이미지 편집 AI <span class="term-en">(AI Image Editing)</span></div><div class="term-desc">사진을 AI로 자동 보정하거나 수정하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">82</span><div class="term-title">배경 제거 <span class="term-en">(Background Removal)</span></div><div class="term-desc">사진에서 배경을 자동으로 지워주는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">83</span><div class="term-title">초해상도 <span class="term-en">(Super Resolution)</span></div><div class="term-desc">AI로 저화질 이미지를 고화질로 만드는 기술</div></div>
+                    <div class="term-card"><span class="term-number">84</span><div class="term-title">업스케일링 <span class="term-en">(Upscaling)</span></div><div class="term-desc">이미지나 영상 해상도를 AI로 높이는 것</div></div>
+                    <div class="term-card"><span class="term-number">85</span><div class="term-title">인페인팅 <span class="term-en">(Inpainting)</span></div><div class="term-desc">사진의 일부를 AI로 채우거나 수정하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">86</span><div class="term-title">아웃페인팅 <span class="term-en">(Outpainting)</span></div><div class="term-desc">이미지 바깥 영역을 AI로 확장하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">87</span><div class="term-title">스타일 전이 <span class="term-en">(Style Transfer)</span></div><div class="term-desc">한 이미지의 스타일을 다른 이미지에 적용하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">88</span><div class="term-title">얼굴 인식 <span class="term-en">(Face Recognition)</span></div><div class="term-desc">사진이나 영상에서 사람의 얼굴을 찾아내는 기술</div></div>
+                    <div class="term-card"><span class="term-number">89</span><div class="term-title">얼굴 복원 <span class="term-en">(Face Restoration)</span></div><div class="term-desc">흐릿한 얼굴 사진을 AI로 선명하게 복원하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">90</span><div class="term-title">애니메이션 변환 <span class="term-en">(Animation Conversion)</span></div><div class="term-desc">실제 사진을 만화나 애니메이션 스타일로 바꾸는 기능</div></div>
+                    <div class="term-card"><span class="term-number">91</span><div class="term-title">컬러라이제이션 <span class="term-en">(Colorization)</span></div><div class="term-desc">흑백 사진에 AI로 자동으로 색을 입히는 기술</div></div>
+                    <div class="term-card"><span class="term-number">92</span><div class="term-title">객체 인식 <span class="term-en">(Object Detection)</span></div><div class="term-desc">사진 속 사물이 무엇인지 AI가 찾아내는 기술</div></div>
+                    <div class="term-card"><span class="term-number">93</span><div class="term-title">이미지 캡셔닝 <span class="term-en">(Image Captioning)</span></div><div class="term-desc">사진을 보고 AI가 설명 글을 만드는 기능</div></div>
+                    <div class="term-card"><span class="term-number">94</span><div class="term-title">딥페이크 <span class="term-en">(Deepfake)</span></div><div class="term-desc">AI로 만든 가짜 영상이나 이미지 (악용 주의)</div></div>
+                    <div class="term-card"><span class="term-number">95</span><div class="term-title">페이스 스왑 <span class="term-en">(Face Swap)</span></div><div class="term-desc">영상이나 사진에서 얼굴을 바꾸는 AI 기술</div></div>
+                    <div class="term-card"><span class="term-number">96</span><div class="term-title">영상 생성 AI <span class="term-en">(Video Generation AI)</span></div><div class="term-desc">텍스트로 영상을 만들어주는 AI</div></div>
+                    <div class="term-card"><span class="term-number">97</span><div class="term-title">Sora <span class="term-en">(Sora)</span></div><div class="term-desc">OpenAI의 텍스트로 영상을 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">98</span><div class="term-title">Runway <span class="term-en">(Runway)</span></div><div class="term-desc">영상 편집과 생성을 도와주는 AI 도구</div></div>
+                    <div class="term-card"><span class="term-number">99</span><div class="term-title">Pika <span class="term-en">(Pika)</span></div><div class="term-desc">간단하게 영상을 만들 수 있는 AI 서비스</div></div>
+                    <div class="term-card"><span class="term-number">100</span><div class="term-title">3D 모델링 AI <span class="term-en">(3D Modeling AI)</span></div><div class="term-desc">2D 이미지를 3D 모델로 변환하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">101</span><div class="term-title">NeRF <span class="term-en">(Neural Radiance Fields)</span></div><div class="term-desc">여러 사진으로 3D 공간을 만드는 AI 기술</div></div>
+                    <div class="term-card"><span class="term-number">102</span><div class="term-title">모션 캡처 <span class="term-en">(Motion Capture)</span></div><div class="term-desc">사람의 움직임을 AI로 추적하고 기록하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">103</span><div class="term-title">AI 필터 <span class="term-en">(AI Filter)</span></div><div class="term-desc">사진이나 영상에 특수 효과를 주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">104</span><div class="term-title">워터마크 <span class="term-en">(Watermark)</span></div><div class="term-desc">AI가 만든 이미지임을 표시하는 투명한 표시</div></div>
+                    <div class="term-card"><span class="term-number">105</span><div class="term-title">GAN <span class="term-en">(Generative Adversarial Network)</span></div><div class="term-desc">서로 경쟁하며 학습하는 이미지 생성 AI 구조</div></div>
+                    <div class="term-card"><span class="term-number">106</span><div class="term-title">디퓨전 모델 <span class="term-en">(Diffusion Model)</span></div><div class="term-desc">노이즈에서 이미지를 만드는 AI 학습 방식</div></div>
+                    <div class="term-card"><span class="term-number">107</span><div class="term-title">ControlNet <span class="term-en">(ControlNet)</span></div><div class="term-desc">이미지 생성을 더 정밀하게 조절하는 AI 기술</div></div>
+                    <div class="term-card"><span class="term-number">108</span><div class="term-title">LoRA <span class="term-en">(Low-Rank Adaptation)</span></div><div class="term-desc">AI 모델을 특정 스타일로 빠르게 학습시키는 방법</div></div>
+                    <div class="term-card"><span class="term-number">109</span><div class="term-title">프롬프트 가이드 <span class="term-en">(Prompt Guide)</span></div><div class="term-desc">이미지 생성 결과를 얼마나 프롬프트에 맞출지 조절</div></div>
+                    <div class="term-card"><span class="term-number">110</span><div class="term-title">시드 넘버 <span class="term-en">(Seed Number)</span></div><div class="term-desc">같은 이미지를 다시 만들기 위한 번호</div></div>
+                    <div class="term-card"><span class="term-number">111</span><div class="term-title">네거티브 프롬프트 <span class="term-en">(Negative Prompt)</span></div><div class="term-desc">이미지에 포함하지 말아야 할 것을 지정하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">112</span><div class="term-title">배치 생성 <span class="term-en">(Batch Generation)</span></div><div class="term-desc">한 번에 여러 이미지를 동시에 만드는 기능</div></div>
+                    <div class="term-card"><span class="term-number">113</span><div class="term-title">이미지 투 이미지 <span class="term-en">(Image-to-Image)</span></div><div class="term-desc">기존 이미지를 참고해서 새 이미지를 만드는 기능</div></div>
+                    <div class="term-card"><span class="term-number">114</span><div class="term-title">스케치 투 이미지 <span class="term-en">(Sketch-to-Image)</span></div><div class="term-desc">손그림을 AI가 완성된 그림으로 바꿔주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">115</span><div class="term-title">QR 코드 아트 <span class="term-en">(QR Code Art)</span></div><div class="term-desc">QR 코드를 예술작품처럼 만드는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">116</span><div class="term-title">포토샵 AI <span class="term-en">(Photoshop AI)</span></div><div class="term-desc">포토샵에 내장된 AI 이미지 편집 기능</div></div>
+                    <div class="term-card"><span class="term-number">117</span><div class="term-title">Canva AI <span class="term-en">(Canva AI)</span></div><div class="term-desc">캔바의 AI 디자인 도구</div></div>
+                    <div class="term-card"><span class="term-number">118</span><div class="term-title">로고 생성 AI <span class="term-en">(Logo Generation AI)</span></div><div class="term-desc">회사나 브랜드 로고를 자동으로 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">119</span><div class="term-title">AI 아바타 <span class="term-en">(AI Avatar)</span></div><div class="term-desc">내 사진으로 다양한 스타일의 프로필을 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">120</span><div class="term-title">Lensa <span class="term-en">(Lensa)</span></div><div class="term-desc">AI 아바타와 사진 편집 앱</div></div>
+                    <div class="term-card"><span class="term-number">121</span><div class="term-title">AI 헤드샷 <span class="term-en">(AI Headshot)</span></div><div class="term-desc">전문가 증명사진을 AI로 만드는 서비스</div></div>
+                    <div class="term-card"><span class="term-number">122</span><div class="term-title">Remove.bg <span class="term-en">(Remove.bg)</span></div><div class="term-desc">사진 배경을 자동으로 제거하는 AI 서비스</div></div>
+                    <div class="term-card"><span class="term-number">123</span><div class="term-title">Remini <span class="term-en">(Remini)</span></div><div class="term-desc">흐릿한 사진을 선명하게 복원하는 AI 앱</div></div>
+                    <div class="term-card"><span class="term-number">124</span><div class="term-title">Photoroom <span class="term-en">(Photoroom)</span></div><div class="term-desc">제품 사진 배경을 쉽게 바꾸는 AI 앱</div></div>
+                    <div class="term-card"><span class="term-number">125</span><div class="term-title">랜더링 <span class="term-en">(Rendering)</span></div><div class="term-desc">AI가 이미지나 영상을 만들어내는 과정</div></div>
+                </div>
+            </div>
+
+            <!-- 카테고리 5: 텍스트 및 문서 AI (126-150) -->
+            <div class="category-section">
+                <div class="category-title">📝 텍스트 및 문서 AI</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">126</span><div class="term-title">텍스트 생성 <span class="term-en">(Text Generation)</span></div><div class="term-desc">AI가 자동으로 글을 작성해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">127</span><div class="term-title">번역 <span class="term-en">(Translation)</span></div><div class="term-desc">한 언어를 다른 언어로 바꿔주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">128</span><div class="term-title">요약 <span class="term-en">(Summarization)</span></div><div class="term-desc">긴 글을 핵심만 뽑아 짧게 정리해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">129</span><div class="term-title">DeepL <span class="term-en">(DeepL)</span></div><div class="term-desc">자연스러운 번역으로 유명한 AI 번역 서비스</div></div>
+                    <div class="term-card"><span class="term-number">130</span><div class="term-title">파파고 <span class="term-en">(Papago)</span></div><div class="term-desc">네이버의 AI 번역 서비스</div></div>
+                    <div class="term-card"><span class="term-number">131</span><div class="term-title">Grammarly <span class="term-en">(Grammarly)</span></div><div class="term-desc">영어 문법과 맞춤법을 검사하는 AI 도구</div></div>
+                    <div class="term-card"><span class="term-number">132</span><div class="term-title">맞춤법 검사 <span class="term-en">(Spell Check)</span></div><div class="term-desc">AI가 글의 맞춤법과 문법 오류를 찾아주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">133</span><div class="term-title">자동 완성 <span class="term-en">(Auto-complete)</span></div><div class="term-desc">입력하는 글을 AI가 예측해서 제안해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">134</span><div class="term-title">감정 분석 <span class="term-en">(Sentiment Analysis)</span></div><div class="term-desc">글의 감정(긍정/부정)을 AI가 판단하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">135</span><div class="term-title">표절 검사 <span class="term-en">(Plagiarism Check)</span></div><div class="term-desc">글이 다른 곳에서 복사한 것인지 확인하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">136</span><div class="term-title">OCR <span class="term-en">(Optical Character Recognition)</span></div><div class="term-desc">이미지나 사진 속 글자를 인식해서 텍스트로 변환하는 기술</div></div>
+                    <div class="term-card"><span class="term-number">137</span><div class="term-title">문서 요약 AI <span class="term-en">(Document Summarizer)</span></div><div class="term-desc">긴 문서를 자동으로 요약해주는 AI</div></div>
+                    <div class="term-card"><span class="term-number">138</span><div class="term-title">Notion AI <span class="term-en">(Notion AI)</span></div><div class="term-desc">노션에 내장된 AI 글쓰기 도우미</div></div>
+                    <div class="term-card"><span class="term-number">139</span><div class="term-title">Jasper <span class="term-en">(Jasper)</span></div><div class="term-desc">마케팅 글 작성에 특화된 AI 서비스</div></div>
+                    <div class="term-card"><span class="term-number">140</span><div class="term-title">Copy.ai <span class="term-en">(Copy.ai)</span></div><div class="term-desc">광고 문구와 콘텐츠를 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">141</span><div class="term-title">Writesonic <span class="term-en">(Writesonic)</span></div><div class="term-desc">블로그와 기사 작성을 돕는 AI 도구</div></div>
+                    <div class="term-card"><span class="term-number">142</span><div class="term-title">문장 교정 <span class="term-en">(Sentence Correction)</span></div><div class="term-desc">어색한 문장을 자연스럽게 고치는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">143</span><div class="term-title">글 리라이팅 <span class="term-en">(Rewriting)</span></div><div class="term-desc">같은 내용을 다른 방식으로 다시 쓰는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">144</span><div class="term-title">키워드 추출 <span class="term-en">(Keyword Extraction)</span></div><div class="term-desc">글에서 중요한 단어를 AI가 찾아내는 기능</div></div>
+                    <div class="term-card"><span class="term-number">145</span><div class="term-title">AI 교정 <span class="term-en">(AI Proofreading)</span></div><div class="term-desc">글의 오류를 찾아 수정 제안하는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">146</span><div class="term-title">톤 변환 <span class="term-en">(Tone Conversion)</span></div><div class="term-desc">글의 분위기를 정중하게, 친근하게 등으로 바꾸는 기능</div></div>
+                    <div class="term-card"><span class="term-number">147</span><div class="term-title">글 확장 <span class="term-en">(Text Expansion)</span></div><div class="term-desc">짧은 글을 더 길고 자세하게 만드는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">148</span><div class="term-title">글 축약 <span class="term-en">(Text Condensing)</span></div><div class="term-desc">긴 글을 핵심만 남기고 줄이는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">149</span><div class="term-title">Q&A 생성 <span class="term-en">(Q&A Generation)</span></div><div class="term-desc">문서에서 자동으로 질문과 답변을 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">150</span><div class="term-title">AI 챗 검색 <span class="term-en">(AI Chat Search)</span></div><div class="term-desc">문서 내용을 질문하면 답을 찾아주는 기능</div></div>
+                </div>
+            </div>
+
+            <!-- 카테고리 6: 코딩 및 개발 AI (151-170) -->
+            <div class="category-section">
+                <div class="category-title">💻 코딩 및 개발 AI</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">151</span><div class="term-title">코드 생성 <span class="term-en">(Code Generation)</span></div><div class="term-desc">AI가 프로그래밍 코드를 자동으로 작성해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">152</span><div class="term-title">GitHub Copilot <span class="term-en">(GitHub Copilot)</span></div><div class="term-desc">프로그래머를 위한 AI 코드 작성 도우미</div></div>
+                    <div class="term-card"><span class="term-number">153</span><div class="term-title">Cursor <span class="term-en">(Cursor)</span></div><div class="term-desc">AI가 내장된 코드 편집 프로그램</div></div>
+                    <div class="term-card"><span class="term-number">154</span><div class="term-title">Replit <span class="term-en">(Replit)</span></div><div class="term-desc">AI와 함께 코딩할 수 있는 온라인 개발 환경</div></div>
+                    <div class="term-card"><span class="term-number">155</span><div class="term-title">코드 설명 <span class="term-en">(Code Explanation)</span></div><div class="term-desc">복잡한 코드를 AI가 쉽게 설명해주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">156</span><div class="term-title">코드 리뷰 <span class="term-en">(Code Review)</span></div><div class="term-desc">AI가 코드의 문제점을 찾아 개선 제안하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">157</span><div class="term-title">버그 찾기 <span class="term-en">(Bug Detection)</span></div><div class="term-desc">코드의 오류를 AI가 자동으로 찾아내는 기능</div></div>
+                    <div class="term-card"><span class="term-number">158</span><div class="term-title">코드 변환 <span class="term-en">(Code Conversion)</span></div><div class="term-desc">한 프로그래밍 언어를 다른 언어로 바꾸는 AI</div></div>
+                    <div class="term-card"><span class="term-number">159</span><div class="term-title">코드 최적화 <span class="term-en">(Code Optimization)</span></div><div class="term-desc">코드를 더 빠르고 효율적으로 만드는 AI 기능</div></div>
+                    <div class="term-card"><span class="term-number">160</span><div class="term-title">테스트 코드 생성 <span class="term-en">(Test Generation)</span></div><div class="term-desc">프로그램을 검증하는 코드를 AI가 자동 작성</div></div>
+                    <div class="term-card"><span class="term-number">161</span><div class="term-title">API 생성 <span class="term-en">(API Generation)</span></div><div class="term-desc">프로그램 연결 코드를 AI가 만들어주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">162</span><div class="term-title">문서화 자동화 <span class="term-en">(Auto Documentation)</span></div><div class="term-desc">코드 설명 문서를 AI가 자동 생성하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">163</span><div class="term-title">No-Code AI <span class="term-en">(No-Code AI)</span></div><div class="term-desc">코딩 없이 AI로 프로그램을 만드는 도구</div></div>
+                    <div class="term-card"><span class="term-number">164</span><div class="term-title">Low-Code AI <span class="term-en">(Low-Code AI)</span></div><div class="term-desc">최소한의 코딩으로 프로그램을 만드는 AI 플랫폼</div></div>
+                    <div class="term-card"><span class="term-number">165</span><div class="term-title">Tabnine <span class="term-en">(Tabnine)</span></div><div class="term-desc">코드 자동완성을 제공하는 AI 도구</div></div>
+                    <div class="term-card"><span class="term-number">166</span><div class="term-title">Amazon CodeWhisperer <span class="term-en">(CodeWhisperer)</span></div><div class="term-desc">아마존의 AI 코드 작성 도우미</div></div>
+                    <div class="term-card"><span class="term-number">167</span><div class="term-title">SQL 생성 <span class="term-en">(SQL Generation)</span></div><div class="term-desc">데이터베이스 명령어를 AI가 자동 작성</div></div>
+                    <div class="term-card"><span class="term-number">168</span><div class="term-title">정규표현식 생성 <span class="term-en">(Regex Generation)</span></div><div class="term-desc">복잡한 문자 패턴을 AI가 만들어주는 기능</div></div>
+                    <div class="term-card"><span class="term-number">169</span><div class="term-title">v0 <span class="term-en">(v0.dev)</span></div><div class="term-desc">Vercel의 UI 코드 자동 생성 AI</div></div>
+                    <div class="term-card"><span class="term-number">170</span><div class="term-title">Bolt <span class="term-en">(Bolt)</span></div><div class="term-desc">웹 애플리케이션을 빠르게 만드는 AI 도구</div></div>
+                </div>
+            </div>
+
+            <!-- 카테고리 7: 실용 및 업무 AI (171-200) -->
+            <div class="category-section">
+                <div class="category-title">🛠️ 실용 및 업무 AI</div>
+                <div class="terms-grid">
+                    <div class="term-card"><span class="term-number">171</span><div class="term-title">추천 시스템 <span class="term-en">(Recommendation System)</span></div><div class="term-desc">넷플릭스처럼 취향에 맞는 콘텐츠를 추천하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">172</span><div class="term-title">자율주행 <span class="term-en">(Autonomous Driving)</span></div><div class="term-desc">AI가 운전하는 무인 자동차 기술</div></div>
+                    <div class="term-card"><span class="term-number">173</span><div class="term-title">로봇 공학 <span class="term-en">(Robotics)</span></div><div class="term-desc">AI를 활용한 로봇 제작과 제어 기술</div></div>
+                    <div class="term-card"><span class="term-number">174</span><div class="term-title">스마트홈 AI <span class="term-en">(Smart Home AI)</span></div><div class="term-desc">집안 기기를 자동으로 제어하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">175</span><div class="term-title">의료 진단 AI <span class="term-en">(Medical Diagnosis AI)</span></div><div class="term-desc">질병을 찾아내고 진단을 돕는 AI</div></div>
+                    <div class="term-card"><span class="term-number">176</span><div class="term-title">AlphaFold <span class="term-en">(AlphaFold)</span></div><div class="term-desc">단백질 구조를 예측하는 생명과학 AI</div></div>
+                    <div class="term-card"><span class="term-number">177</span><div class="term-title">금융 AI <span class="term-en">(Financial AI)</span></div><div class="term-desc">투자와 금융 관리를 돕는 AI</div></div>
+                    <div class="term-card"><span class="term-number">178</span><div class="term-title">사기 탐지 <span class="term-en">(Fraud Detection)</span></div><div class="term-desc">이상한 거래를 AI가 찾아내는 기능</div></div>
+                    <div class="term-card"><span class="term-number">179</span><div class="term-title">AI 채용 도구 <span class="term-en">(AI Recruiting)</span></div><div class="term-desc">이력서 분석과 면접을 돕는 AI</div></div>
+                    <div class="term-card"><span class="term-number">180</span><div class="term-title">AI 고객 서비스 <span class="term-en">(AI Customer Service)</span></div><div class="term-desc">고객 문의에 자동 응답하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">181</span><div class="term-title">데이터 분석 AI <span class="term-en">(Data Analytics AI)</span></div><div class="term-desc">복잡한 데이터를 분석하고 인사이트를 찾는 AI</div></div>
+                    <div class="term-card"><span class="term-number">182</span><div class="term-title">예측 분석 <span class="term-en">(Predictive Analytics)</span></div><div class="term-desc">과거 데이터로 미래를 예측하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">183</span><div class="term-title">AI 교육 도구 <span class="term-en">(AI Education Tool)</span></div><div class="term-desc">학습을 도와주는 AI 튜터</div></div>
+                    <div class="term-card"><span class="term-number">184</span><div class="term-title">Khan Academy AI <span class="term-en">(Khanmigo)</span></div><div class="term-desc">칸아카데미의 AI 학습 도우미</div></div>
+                    <div class="term-card"><span class="term-number">185</span><div class="term-title">AI 프레젠테이션 <span class="term-en">(AI Presentation)</span></div><div class="term-desc">발표 자료를 자동으로 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">186</span><div class="term-title">Gamma <span class="term-en">(Gamma)</span></div><div class="term-desc">AI로 PPT를 자동 생성하는 서비스</div></div>
+                    <div class="term-card"><span class="term-number">187</span><div class="term-title">Beautiful.ai <span class="term-en">(Beautiful.ai)</span></div><div class="term-desc">디자인 좋은 발표 자료를 만드는 AI</div></div>
+                    <div class="term-card"><span class="term-number">188</span><div class="term-title">일정 관리 AI <span class="term-en">(Schedule Management AI)</span></div><div class="term-desc">회의 시간을 자동으로 조율하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">189</span><div class="term-title">이메일 자동 회신 <span class="term-en">(Auto Email Reply)</span></div><div class="term-desc">이메일에 AI가 자동으로 답장하는 기능</div></div>
+                    <div class="term-card"><span class="term-number">190</span><div class="term-title">AI 검색 엔진 <span class="term-en">(AI Search Engine)</span></div><div class="term-desc">AI가 검색 결과를 요약해주는 검색 서비스</div></div>
+                    <div class="term-card"><span class="term-number">191</span><div class="term-title">Zapier AI <span class="term-en">(Zapier AI)</span></div><div class="term-desc">업무 프로세스를 자동화하는 AI</div></div>
+                    <div class="term-card"><span class="term-number">192</span><div class="term-title">템플릿 <span class="term-en">(Template)</span></div><div class="term-desc">미리 만들어진 양식이나 틀</div></div>
+                    <div class="term-card"><span class="term-number">193</span><div class="term-title">익스포트 <span class="term-en">(Export)</span></div><div class="term-desc">AI 결과물을 파일로 저장하거나 내보내는 기능</div></div>
+                    <div class="term-card"><span class="term-number">194</span><div class="term-title">임포트 <span class="term-en">(Import)</span></div><div class="term-desc">외부 파일을 AI로 가져오는 기능</div></div>
+                    <div class="term-card"><span class="term-number">195</span><div class="term-title">사실확인 <span class="term-en">(Fact Check)</span></div><div class="term-desc">AI 답변이 정확한지 다시 검증하는 것</div></div>
+                    <div class="term-card"><span class="term-number">196</span><div class="term-title">오픈소스 <span class="term-en">(Open Source)</span></div><div class="term-desc">누구나 무료로 사용하고 수정할 수 있는 프로그램</div></div>
+                    <div class="term-card"><span class="term-number">197</span><div class="term-title">클라우드 <span class="term-en">(Cloud)</span></div><div class="term-desc">내 컴퓨터가 아닌 인터넷 공간에 데이터를 저장하는 것</div></div>
+                    <div class="term-card"><span class="term-number">198</span><div class="term-title">API <span class="term-en">(Application Programming Interface)</span></div><div class="term-desc">다른 프로그램과 AI를 연결해주는 통로</div></div>
+                    <div class="term-card"><span class="term-number">199</span><div class="term-title">업데이트 <span class="term-en">(Update)</span></div><div class="term-desc">프로그램이나 AI 기능을 최신 상태로 바꾸는 것</div></div>
+                    <div class="term-card"><span class="term-number">200</span><div class="term-title">화면 확대 <span class="term-en">(Zoom In)</span></div><div class="term-desc">글자나 그림을 더 크게 보여주는 기능</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="scroll-to-top" id="scrollTopBtn" title="위로 이동하기" aria-label="맨 위로">
+        ▲
+    </button>
+    <script>
+    // 검색 및 위로가기
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('term-search');
+        const termCards = Array.from(document.querySelectorAll('.term-card'));
+
+        function normalize(txt) {
+            return txt
+                .replace(/[\u200B-\u200D\uFEFF]/g, '')
+                .replace(/[^\w가-힣# ]/gi, '')
+                .toLowerCase();
+        }
+        searchInput.addEventListener('input', function () {
+            let val = normalize(searchInput.value.trim());
+            if (!val) {
+                termCards.forEach(card => card.classList.remove('hidden'));
+                window.location.hash = '';
+                return;
+            }
+            termCards.forEach(card => {
+                const kor = (card.getAttribute('data-kor') || '');
+                const en = (card.getAttribute('data-en') || '');
+                const text = (kor + ' ' + en + ' ' + card.innerText).toLowerCase();
+                if (normalize(text).indexOf(val) > -1) card.classList.remove('hidden');
+                else card.classList.add('hidden');
+            });
+        });
+
+        // 위로가기 버튼
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 200) scrollBtn.classList.add('visible');
+            else scrollBtn.classList.remove('visible');
+        });
+        scrollBtn.addEventListener('click', function () {
+            window.scrollTo({top:0, behavior:'smooth'});
+        });
+
+        // 엔터 시 첫 결과 강조 및 스크롤
+        searchInput.addEventListener('keypress', function(e){
+            if(e.key === 'Enter') {
+                const visibleCard = termCards.find(card=>!card.classList.contains('hidden'));
+                if(visibleCard) {
+                    visibleCard.classList.add('highlight');
+                    visibleCard.scrollIntoView({behavior:'smooth', block:'center'});
+                    setTimeout(()=>visibleCard.classList.remove('highlight'),1200);
+                }
+            }
+        });
+    });
+    </script>
